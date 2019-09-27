@@ -5,8 +5,7 @@ module.exports = {
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     region: process.env.AWS_REGION
   },
-  'users': {
-    'userIdToParrot': process.env.TWITTER_USER_ID_TO_PARROT,
-    'userIdParrot': process.env.TWITTER_USER_ID_PARROT
+  'pw': {
+    'userIdToParrot': process.env.SUPER_SECURE_PASSWORD
   }
 }
