@@ -1,0 +1,13 @@
+{
+  "name": "soundsof.us",
+  "version": "0.0.0",
+  "description": "API for soundsof.us",
+  "main": "server.js",
+  "author": "Generic Error",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "cors": "^2.8.4",
+    "express": "^4.15.3"
+  }
+}
