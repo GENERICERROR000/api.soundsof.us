@@ -1,13 +1,17 @@
 {
   "name": "soundsof.us",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "API for soundsof.us",
   "main": "server.js",
-  "author": "Generic Error",
+  "repository": "git@github.com:nkernis/PARROTS_DONT_TWEET.git CHNAGE CGANGE",
+  "author": "<GENERIC ERROR> <<genericemailerror@gmail.com>> CHNAGE",
   "license": "MIT",
   "dependencies": {
+    "aws-sdk": "^2.329.0",
     "body-parser": "^1.17.2",
     "cors": "^2.8.4",
-    "express": "^4.15.3"
+    "express": "^4.15.3",
+    "helmet": "^3.13.0",
+    "morgan": "^1.9.1"
   }
 }

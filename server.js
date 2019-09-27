@@ -1,38 +1,26 @@
-// Require Express
-const express = require('express')
+const express = require('express'),
+  bodyParser = require('body-parser'),
+  cors = require('cors'),
+  logger = require('morgan'),
+  helmet = require('helmet'),
+  config = require('./config')
 
-// Init App
+
 const app = express()
 
-// Require Mongoose
-const mongoose = require('mongoose')
+// ----------> Set Middleware <----------
 
-// Require BodyParser
-const bodyParser = require('body-parser')
-
-// Require Cors
-const cors = require('cors');
-
-// Connect to DB
-mongoose.connect('mongodb://localhost:27017/bookdb')
-
-// Tell app to use BodyParser
+app.use(logger('common'))
+app.use(helmet())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
-
-// Tell app to use Cors
 app.use(cors())
-
-// Set Headers for Requests
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE')
   res.setHeader('Access-Control-Allow-Headers', 'content-type')
   next()
 })
-
-// Bring in Book model
-const Book = require('./models/Book');
 
 // ----------> API ROUTES <----------
 // Home/Root Page
@@ -97,7 +85,9 @@ app.use((req, res) => {
 })
 // ----------> END API ROUTES <----------
 
-// Start Server
-app.listen(3000, () => {
-  console.log('Server started on port 3000...')
+// ----------> Init Server <----------
+app.listen(config.port, (err) => {
+  if (err) console.log('Something went wrong', err)
+  console.log(`Server started on port ${config.port}...`)
 })
+
