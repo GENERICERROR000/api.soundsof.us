@@ -1,46 +1,50 @@
 const AWS = require('aws-sdk')
+const fs = require('fs')
 const config = require('../config')
 
 AWS.config.update(config.aws)
 
-exports.saveSound = (sound) => {
-    let id = saveToS3(sound)
-    saveToDB(id)
+const soundFolder = '../sounds/'
+
+exports.saveSound = (req, res) => {
+	// let id = saveToS3(sound)
+	// saveToDB(id)
+	let uploadLocation = __dirname + '/../sounds/' + `${new Date().getTime()}` + ".wav"
+
+	fs.writeFileSync(uploadLocation, Buffer.from(new Uint8Array(req.file.buffer))); // write the blob to the server as a file
+	res.sendStatus(200); //send back that everything went ok
 }
 
 const saveToS3 = (sound) => {
-    //  let s3bucket = new AWS.S3(
+	let s3bucket = new AWS.S3()
 
-    // var params = {
-    //     Bucket: BUCKET_NAME,
-    //     Key: file.name,
-    //     Body: file.data
-    // };
-    // s3bucket.upload(params, function (err, data) {
-    //     if (err) {
-    //         console.log('error in callback');
-    //         console.log(err);
-    //     }
-    //     console.log('success');
-    //     console.log(data);
-    // });
+	let params = {
+		Bucket: "soundsof.us",
+		Key: sound.name,
+		Body: sound.data
+	}
+	
+	s3bucket.upload(params, function (err, data) {
+		if (err) console.log(err)
+		else console.log(data)
+	})
 
 
-    // return "id"
+	// return "id"
 }
 
 const saveToDB = (id) => {
-    let docClient = new AWS.DynamoDB.DocumentClient()
+	let docClient = new AWS.DynamoDB.DocumentClient()
 
-    let params = {
-        TableName: "soundsofus",
-        Item: {
-            "id": id
-        }
-    }
+	let params = {
+		TableName: "soundsofus",
+		Item: {
+			"id": id
+		}
+	}
 
-    docClient.put(params, (err, data) => {
-        if (err) console.error("UNABLE TO ADD SOUND:", err)
-        else console.log("SOUND ADDED:", data)
-    })
+	docClient.put(params, (err, data) => {
+		if (err) console.error("UNABLE TO ADD SOUND:", err)
+		else console.log("SOUND ADDED:", data)
+	})
 }
