@@ -41,8 +41,6 @@ app.use((req, res, next) => {
 	next()
 })
 
-app.use('/.netlify/functions/server', router)
-
 // ----------> Helper Functions <----------
 
 const getSounds = (req, res) => {
@@ -101,8 +99,8 @@ router.get('/api/v1/sounds', (req, res) => getSounds(req, res))
 // Create Sound
 router.post('/api/v1/sounds/new', (req, res) => saveSound(req, res))
 
-//  404 Error
-router.use((req, res) => res.send("<b>404 - Page Not Found</b> <br><br><br><br> Oh - hey there. Seems you have found the page that indicates the page you're looking for is not actually page... <br><br> How's that for clarity?"))
+// ----------> Netlify Function <----------
+app.use('/.netlify/functions/server', router)
 
 module.exports = app
 module.exports.handler = serverless(app)
