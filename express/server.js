@@ -63,7 +63,7 @@ const getSounds = (req, res) => {
 	})
 }
 
-saveSound = (req, res) => {
+const saveSound = (req, res) => {
 	let buffer = req.file.buffer
 	let name = `${new Date().getTime()}+--+` + req.file.originalname + ".wav"
 	let s3 = new AWS.S3()
