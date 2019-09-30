@@ -1,3 +1,4 @@
+'use strict';
 const express = require('express'),
 	bodyParser = require('body-parser'),
 	cors = require('cors'),
@@ -5,7 +6,7 @@ const express = require('express'),
 	helmet = require('helmet'),
 	multer = require('multer'),
 	serverless = require('serverless-http'),
-	AWS = require('aws-sdk'),
+	AWS = require('aws-sdk')
 
 const upload = multer()
 const app = express()
