@@ -1,7 +1,7 @@
 'use strict';
 
-const app = require('./server');
-const config = require('./config')
+const app = require('./express/server');
+const config = require('./express/config')
 
 // ----------> Init Server <----------
 app.listen(config.port, (err) => {
