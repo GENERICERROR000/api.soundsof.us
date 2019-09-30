@@ -5,12 +5,22 @@ const express = require('express'),
 	helmet = require('helmet'),
 	multer = require('multer'),
 	serverless = require('serverless-http'),
-	get = require('./routes/get'),
-	post = require('./routes/post')
+	AWS = require('aws-sdk'),
 
 const upload = multer()
 const app = express()
 const router = express.Router();
+
+const config = {
+  'port': process.env.API_PORT || 3001,
+  'aws': {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID_MINE,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY_MINE,
+    region: process.env.AWS_REGION_MINE
+  }
+}
+
+AWS.config.update(config.aws)
 
 app.use(multer().single('soundBlob'))
 
@@ -32,16 +42,63 @@ app.use((req, res, next) => {
 
 app.use('/.netlify/functions/server', router)
 
+// ----------> Helper Functions <----------
+
+const getSounds = (req, res) => {
+	let s3 = new AWS.S3()
+
+	let params = {
+		Bucket: 'media.soundsof.us',
+		Delimiter: '/',
+		Prefix: 'audio/'
+	}
+
+	s3.listObjectsV2(params, function (err, data) {
+		if (err) {
+			console.error("UNABLE TO LIST BUCKET:", err)
+		} else {
+			res.setHeader('Content-Type', 'application/json')
+			res.end(JSON.stringify(data))
+		}
+	})
+}
+
+saveSound = (req, res) => {
+	let buffer = req.file.buffer
+	let name = `${new Date().getTime()}+--+` + req.file.originalname + ".wav"
+	let s3 = new AWS.S3()
+
+	// Write to file for tests
+	// let uploadLocation = __dirname + '/../sounds/' + name
+	// fs.writeFileSync(uploadLocation, Buffer.from(new Uint8Array(buffer)));
+
+	let params = {
+		Bucket: "media.soundsof.us",
+		Key: "audio/" + name,
+		ACL: "public-read",
+		Body: Buffer.from(new Uint8Array(buffer))
+	}
+
+	s3.upload(params, function (err) {
+		if (err) {
+			console.error("UNABLE TO ADD SOUND:", err)
+		} else {
+			console.log("SOUND ADDED TO DB AND S3")
+			res.sendStatus(201)
+		}
+	})
+}
+
 // ----------> API Routes <----------
 
 // Homepage for API
 router.get('/', (req, res) => res.send("WHY ARE YOU HERE? <br><br> THIS IS THE API HOMEPAGE FOR <a href='https://soundsof.us'>SOUNDSOF.US</a> <br><br> WHY DID I EVEN MAKE THIS!?"))
 
 // Get All Sounds
-router.get('/api/v1/sounds', (req, res) => get.Sounds(req, res))
+router.get('/api/v1/sounds', (req, res) => getSounds(req, res))
 
 // Create Sound
-router.post('/api/v1/sounds/new', (req, res) => post.saveSound(req, res))
+router.post('/api/v1/sounds/new', (req, res) => saveSound(req, res))
 
 //  404 Error
 router.use((req, res) => res.send("<b>404 - Page Not Found</b> <br><br><br><br> Oh - hey there. Seems you have found the page that indicates the page you're looking for is not actually page... <br><br> How's that for clarity?"))
