@@ -4,12 +4,13 @@ const express = require('express'),
 	logger = require('morgan'),
 	helmet = require('helmet'),
 	multer = require('multer'),
-	config = require('./config'),
+	serverless = require('serverless-http'),
 	get = require('./routes/get'),
 	post = require('./routes/post')
 
 const upload = multer()
 const app = express()
+const router = express.Router();
 
 app.use(multer().single('soundBlob'))
 
@@ -29,23 +30,21 @@ app.use((req, res, next) => {
 	next()
 })
 
+app.use('/.netlify/functions/server', router)
+
 // ----------> API Routes <----------
 
 // Homepage for API
-app.get('/', (req, res) => res.send("WHY ARE YOU HERE? <br><br> THIS IS THE API HOMEPAGE FOR <a href='https://soundsof.us'>SOUNDSOF.US</a> <br><br> WHY DID I EVEN MAKE THIS!?"))
+router.get('/', (req, res) => res.send("WHY ARE YOU HERE? <br><br> THIS IS THE API HOMEPAGE FOR <a href='https://soundsof.us'>SOUNDSOF.US</a> <br><br> WHY DID I EVEN MAKE THIS!?"))
 
 // Get All Sounds
-// app.get('/api/v1/sounds', upload.single('soundBlob'), (req, res) => get.Sounds(req, res))
-app.get('/api/v1/sounds', (req, res) => get.Sounds(req, res))
+router.get('/api/v1/sounds', (req, res) => get.Sounds(req, res))
 
 // Create Sound
-app.post('/api/v1/sounds/new', (req, res) => post.saveSound(req, res))
+router.post('/api/v1/sounds/new', (req, res) => post.saveSound(req, res))
 
 //  404 Error
-app.use((req, res) => res.send("<b>404 - Page Not Found</b> <br><br><br><br> Oh - hey there. Seems you have found the page that indicates the page you're looking for is not actually page... <br><br> How's that for clarity?"))
+router.use((req, res) => res.send("<b>404 - Page Not Found</b> <br><br><br><br> Oh - hey there. Seems you have found the page that indicates the page you're looking for is not actually page... <br><br> How's that for clarity?"))
 
-// ----------> Init Server <----------
-app.listen(config.port, (err) => {
-	if (err) console.log('Something went wrong', err)
-	console.log(`Server started on port ${config.port}...`)
-})
+module.exports = app
+module.exports.handler = serverless(app)

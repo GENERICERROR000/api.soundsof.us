@@ -11,6 +11,10 @@ exports.saveSound = (req, res) => {
 	let name = `${new Date().getTime()}+--+` + req.file.originalname + ".wav"
 	let s3 = new AWS.S3()
 
+	// Write to file for tests
+	// let uploadLocation = __dirname + '/../sounds/' + name
+	// fs.writeFileSync(uploadLocation, Buffer.from(new Uint8Array(buffer)));
+
 	let params = {
 		Bucket: "media.soundsof.us",
 		Key: "audio/" + name,
@@ -27,6 +31,3 @@ exports.saveSound = (req, res) => {
 		}
 	})
 }
-
-// let uploadLocation = __dirname + '/../sounds/' + req.file.originalname + `+--+${new Date().getTime()}` + ".wav"
-// fs.writeFileSync(uploadLocation, Buffer.from(new Uint8Array(req.file.buffer)));
