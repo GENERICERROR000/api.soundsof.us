@@ -4,21 +4,20 @@ const config = require('../config')
 AWS.config.update(config.aws)
 
 exports.Sounds = (req, res) => {
-	// return getSounds()
-	return getSounds()
-
-	// res.json(finalData)
-}
-
-const getSounds = (i) => {
-	const docClient = new AWS.DynamoDB.DocumentClient()
+	let s3 = new AWS.S3()
 
 	let params = {
-		TableName: "soundsofus"
+		Bucket: 'media.soundsof.us',
+		Delimiter: '/',
+		Prefix: 'audio/'
 	}
 
-	docClient.scan(params, (err, data) => {
-		if (err) console.error("UNABLE TO ADD SOUND:", err)
-		else console.log("SOUND ADDED:", data)
+	s3.listObjectsV2(params, function (err, data) {
+		if (err) {
+			console.error("UNABLE TO LIST BUCKET:", err)
+		} else {
+			res.setHeader('Content-Type', 'application/json')
+			res.end(JSON.stringify(data))
+		}
 	})
 }
